@@ -1,6 +1,6 @@
 # HCB-Present: A Financial Presentation Tool
 
-*DISCLAIMER: This is an unofficial project and not affiliated with Hack Club Bank.*
+*A project of mine. If you want to skip to hosting it use FINAL.html*
 
 ---
 
