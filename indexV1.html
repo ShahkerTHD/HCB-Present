@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCB Organization Info</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>HCB Organization Info</h1>
+    <input type="text" id="orgId" placeholder="Enter organization ID or slug">
+    <button onclick="fetchOrgInfo()">Get Info</button>
+    <div id="result"></div>
+
+    <script>
+        async function fetchOrgInfo() {
+            const orgId = document.getElementById('orgId').value;
+            const resultDiv = document.getElementById('result');
+
+            try {
+                const response = await fetch(`https://hcb.hackclub.com/api/v3/organizations/${orgId}`);
+                if (!response.ok) {
+                    throw new Error('Organization not found or not in Transparency Mode');
+                }
+                const data = await response.json();
+
+                const orgName = data.name;
+                const totalRaised = (data.balances.total_raised / 100).toFixed(2); // Convert cents to dollars
+
+                resultDiv.innerHTML = `
+                    <h2>${orgName}</h2>
+                    <p>Total Amount Raised: $${totalRaised}</p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
