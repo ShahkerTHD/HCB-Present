@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCB Organization Info</title>
+    <style>
+        body {
+            font-family: "Phantom Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.5;
+            font-weight: 400;
+            color: #1f2d3d;
+            margin: 0;
+            min-height: 100vh;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #f9fafc;
+        }
+        .container {
+            max-width: 100%;
+            width: 100%;
+            height: 100vh;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            line-height: 1.125;
+            letter-spacing: -0.009em;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        input {
+            background-color: #ffffff;
+            color: #1f2d3d;
+            font-family: inherit;
+            border-radius: 8px;
+            border: 1px solid #e0e6ed;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 1rem;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.125);
+            letter-spacing: 0.009em;
+            background-color: #ec3750;
+            color: #ffffff;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            transition: transform .125s ease-in-out, box-shadow .125s ease-in-out;
+        }
+        button:hover, button:focus {
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.0625), 0 8px 12px rgba(0, 0, 0, 0.125);
+            transform: scale(1.0625);
+        }
+        .hidden {
+            display: none;
+        }
+        .org-name {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            color: #1f2d3d;
+        }
+        .amount-raised {
+            font-size: 5rem;
+            color: #33d6a6;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="startScreen">
+        <h1>Enter Organization ID or Slug</h1>
+        <input type="text" id="orgId" placeholder="Enter organization ID or slug">
+        <button onclick="showOrgInfo()">Next</button>
+    </div>
+
+    <div class="container hidden" id="infoScreen">
+        <div class="org-name" id="orgName"></div>
+        <div class="amount-raised" id="amountRaised"></div>
+    </div>
+
+    <script>
+        async function showOrgInfo() {
+            const orgId = document.getElementById('orgId').value;
+            const startScreen = document.getElementById('startScreen');
+            const infoScreen = document.getElementById('infoScreen');
+            const orgNameDiv = document.getElementById('orgName');
+            const amountRaisedDiv = document.getElementById('amountRaised');
+
+            try {
+                const response = await fetch(`https://hcb.hackclub.com/api/v3/organizations/${orgId}`);
+                if (!response.ok) {
+                    throw new Error('Organization not found or not in Transparency Mode');
+                }
+                const data = await response.json();
+
+                const orgName = data.name;
+                const totalRaised = (data.balances.total_raised / 100).toFixed(2); // Convert cents to dollars
+
+                orgNameDiv.textContent = orgName;
+                amountRaisedDiv.textContent = `$${totalRaised}`;
+
+                startScreen.classList.add('hidden');
+                infoScreen.classList.remove('hidden');
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
